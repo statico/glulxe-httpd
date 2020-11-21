@@ -40,7 +40,6 @@
     "console-stamp": "0.2.9",
     "cors": "2.8.5",
     "express": "4.17.1",
-    "humanize-plus": "1.8.2",
     "papaparse": "5.3.0",
     "touch": "3.1.0",
     "uuid": "8.3.1"

@@ -1,13 +1,12 @@
 import * as bodyParser from 'body-parser'
 import { ChildProcess, spawn } from 'child_process'
-import commander from 'commander'
+import * as commander from 'commander'
 import * as cors from 'cors'
 import * as express from 'express'
 import * as fs from 'fs'
-import { fileSize } from 'humanize-plus'
 import { unparse } from 'papaparse'
-import touch from 'touch'
-import uuid from 'uuid'
+import * as touch from 'touch'
+import * as uuid from 'uuid'
 
 require('console-stamp')(console)
 
@@ -18,6 +17,7 @@ const sleep = (ms: number) =>
 
 commander
   .usage('<story.z8>')
+  .option('-x, --exec <cmd>', 'Path to glulxe', 'glulxe')
   .option('-d, --debug', 'Always create/return the same session ID, "test"')
   .option(
     '-t, --session-timeout <timeout>',
@@ -34,10 +34,9 @@ if (commander.args.length !== 1) {
 
 const sessions: { [key: string]: Session } = {}
 
+// Cleanup idle sessions.
 setInterval(function () {
   const t = Date.now() - Number(commander.sessionTimeout) * 1000
-
-  // Cleanup idle sessions.
   for (const id in sessions) {
     const sess = sessions[id]
     if (sess.lastUpdate < t) {
@@ -46,16 +45,6 @@ setInterval(function () {
       delete sessions[id]
     }
   }
-
-  // Print memory usage to console.
-  const mem = process.memoryUsage()
-  for (const k in mem) {
-    const v = mem[k]
-    mem[k] = fileSize(v)
-  }
-  return console.log(
-    `${Object.keys(sessions).length} sessions, memory: ${JSON.stringify(mem)}`
-  )
 }, 60 * 1000)
 
 class Session {
@@ -71,7 +60,7 @@ class Session {
     this.lastUpdate = Date.now()
     this.buffer = ''
 
-    this.process = spawn('glulxe', [commander.args[0]])
+    this.process = spawn(commander.exec, [commander.args[0]])
     this.process.stdout.on('data', (data) => {
       this.buffer += data
     })
@@ -94,7 +83,7 @@ class Session {
   }
 
   getBuffer(): string {
-    const output = this.buffer.replace(/^\s+/, '') // Trim leading space.
+    const output = this.buffer.trim().replace(/\n*>$/, '')
     this.buffer = ''
     return output
   }
@@ -140,13 +129,16 @@ app.get('/', function (req, res) {
   res.send('ok\n')
 })
 
-app.get('/new', async function (req, res) {
+app.post('/new', async function (req, res) {
   const remoteAddr = req.get('x-forwarded-for') || req.connection.remoteAddress
   const sess = new Session()
   sessions[sess.id] = sess
   console.log(sess.id, remoteAddr, '(new session)')
   await sleep(100)
-  res.json({ session: sess.id, output: sess.getBuffer() })
+  const output = sess
+    .getBuffer()
+    .replace(/^Welcome to the Cheap Glk Implementation[^\n]+\n+/m, '')
+  res.json({ session: sess.id, output })
 })
 
 app.post('/send', async function (req, res) {
