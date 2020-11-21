@@ -64,10 +64,8 @@ class Session {
     this.process.stdout.on('data', (data) => {
       this.buffer += data
     })
-    this.process.on('exit', (code, signal) => {
-      console.log(
-        `Session ${this.id} exited with signal ${signal} and code ${code}`
-      )
+    this.process.on('exit', (code) => {
+      console.log(`Session ${this.id} exited with code ${code}`)
       this.running = false
     })
     this.process.on('error', (err) => {
@@ -82,7 +80,17 @@ class Session {
     this.running = false
   }
 
-  getBuffer(): string {
+  async getBuffer(): Promise<string> {
+    // Wait up to 2 seconds for the buffer to end with the '>' prompt.
+    let count = 0
+    while (true) {
+      if (!this.running) break
+      if (this.buffer.endsWith('>')) break
+      count++
+      if (count > 8) break
+      await sleep(250)
+    }
+    // Remove the prompt before returning.
     const output = this.buffer.trim().replace(/\n*>$/, '')
     this.buffer = ''
     return output
@@ -94,8 +102,7 @@ class Session {
     }
     this.lastUpdate = Date.now()
     this.process.stdin.write(input.trim() + '\n')
-    await sleep(300)
-    return this.getBuffer().trim()
+    return this.getBuffer()
   }
 }
 
@@ -134,10 +141,10 @@ app.post('/new', async function (req, res) {
   const sess = new Session()
   sessions[sess.id] = sess
   console.log(sess.id, remoteAddr, '(new session)')
-  await sleep(500)
-  const output = sess
-    .getBuffer()
-    .replace(/^Welcome to the Cheap Glk Implementation[^\n]+\n+/m, '')
+  const output = (await sess.getBuffer()).replace(
+    /^Welcome to the Cheap Glk[^\n]+\n+/m,
+    ''
+  )
   res.json({ session: sess.id, output })
 })
 
@@ -169,7 +176,7 @@ app.post('/send', async function (req, res) {
     }
   } catch (err) {
     console.error(sess.id, remoteAddr, `Error: ${err}`)
-    res.status(500).json({ error: err })
+    res.status(500).json({ error: String(err) })
     return
   }
 })
