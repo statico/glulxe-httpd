@@ -11,7 +11,7 @@ With the `--csv` option, transcripts of commands are saved to a CSV file. (I rea
 
 ## Get Started
 
-If you haven't spent many laborous hours writing an interactive fiction game with [Inform](http://inform7.com/), you can download one from the [Interactive Fiction Database](https://ifdb.tads.org/search?searchfor=format:Glulx%2fBlorb) or grab the class _Adventure_ game as a `.ulx` file from [the Glulx page](https://www.eblong.com/zarf/glulx/index.html).
+If you haven't spent many laborous hours writing an interactive fiction game with [Inform](http://inform7.com/), you can download one from the [Interactive Fiction Database](https://ifdb.tads.org/search?searchfor=format:Glulx%2fBlorb) or grab the classic _Adventure_ game as a `.ulx` file from [the Glulx page](https://www.eblong.com/zarf/glulx/index.html).
 
 ### With Docker
 
