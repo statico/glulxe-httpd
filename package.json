@@ -6,5 +6,18 @@
   "repository": "git@github.com:statico/glulxe-httpd.git",
   "author": "Ian Langworth <ian@langworth.com>",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "husky": ">=4",
+    "lint-staged": ">=10",
+    "prettier": "2.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
+  }
 }
