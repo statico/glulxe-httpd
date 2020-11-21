@@ -1,0 +1,10 @@
+{
+  "name": "glulxe-httpd",
+  "version": "1.0.0",
+  "description": "HTTP+JSON .ulx interactive fiction server with session support",
+  "main": "server.js",
+  "repository": "git@github.com:statico/glulxe-httpd.git",
+  "author": "Ian Langworth <ian@langworth.com>",
+  "license": "MIT",
+  "private": true
+}
