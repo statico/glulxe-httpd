@@ -16,7 +16,7 @@ const sleep = (ms: number) =>
   })
 
 commander
-  .usage('<story.z8>')
+  .usage('<story.ulx>')
   .option('-x, --exec <cmd>', 'Path to glulxe', 'glulxe')
   .option('-d, --debug', 'Always create/return the same session ID, "test"')
   .option(
@@ -94,7 +94,7 @@ class Session {
     }
     this.lastUpdate = Date.now()
     this.process.stdin.write(input.trim() + '\n')
-    await sleep(100)
+    await sleep(300)
     return this.getBuffer().trim()
   }
 }
@@ -134,7 +134,7 @@ app.post('/new', async function (req, res) {
   const sess = new Session()
   sessions[sess.id] = sess
   console.log(sess.id, remoteAddr, '(new session)')
-  await sleep(100)
+  await sleep(500)
   const output = sess
     .getBuffer()
     .replace(/^Welcome to the Cheap Glk Implementation[^\n]+\n+/m, '')
