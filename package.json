@@ -2,15 +2,29 @@
   "name": "glulxe-httpd",
   "version": "1.0.0",
   "description": "HTTP+JSON .ulx interactive fiction server with session support",
-  "main": "server.js",
+  "scripts": {
+    "start": "ts-node-dev server.ts"
+  },
   "repository": "git@github.com:statico/glulxe-httpd.git",
   "author": "Ian Langworth <ian@langworth.com>",
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@types/body-parser": "1.19.0",
+    "@types/commander": "2.12.2",
+    "@types/console-stamp": "0.2.32",
+    "@types/cors": "2.8.8",
+    "@types/express": "4.17.9",
+    "@types/humanize-plus": "1.8.0",
+    "@types/node": "12",
+    "@types/papaparse": "5.2.4",
+    "@types/touch": "3.1.1",
+    "@types/uuid": "8.3.0",
     "husky": ">=4",
     "lint-staged": ">=10",
-    "prettier": "2.2.0"
+    "prettier": "2.2.0",
+    "ts-node-dev": "1.0.0",
+    "typescript": "4.1.2"
   },
   "husky": {
     "hooks": {
@@ -19,5 +33,16 @@
   },
   "lint-staged": {
     "*.{js,css,md}": "prettier --write"
+  },
+  "dependencies": {
+    "body-parser": "1.19.0",
+    "commander": "6.2.0",
+    "console-stamp": "0.2.9",
+    "cors": "2.8.5",
+    "express": "4.17.1",
+    "humanize-plus": "1.8.2",
+    "papaparse": "5.3.0",
+    "touch": "3.1.0",
+    "uuid": "8.3.1"
   }
 }
