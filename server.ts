@@ -90,8 +90,7 @@ class Session {
       if (count > 8) break
       await sleep(250)
     }
-    // Remove the prompt before returning.
-    const output = this.buffer.trim().replace(/\n*>$/, '')
+    const output = this.buffer.trim()
     this.buffer = ''
     return output
   }
