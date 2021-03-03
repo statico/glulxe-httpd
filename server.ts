@@ -115,7 +115,7 @@ function logToCSV(
   const datetime = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const line = unparse([[datetime, sessionId, addr, message, reply]])
   try {
-    fs.appendFileSync(commander.csv, line, 'utf8')
+    fs.appendFileSync(commander.csv, line + '\n', 'utf8')
   } catch (err) {
     console.error(`Could not write to ${commander.csv}:`, err)
   }
