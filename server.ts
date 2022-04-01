@@ -31,6 +31,13 @@ commander
 if (commander.args.length !== 1) {
   commander.help()
 }
+const [story] = commander.args
+
+const stat = fs.statSync(story)
+if (!(stat && stat.isFile())) {
+  console.error(`Missing story file at ${story}`)
+  process.exit(1)
+}
 
 const sessions: { [key: string]: Session } = {}
 
@@ -60,7 +67,7 @@ class Session {
     this.lastUpdate = Date.now()
     this.buffer = ""
 
-    this.process = spawn(commander.exec, [commander.args[0]])
+    this.process = spawn(commander.exec, [story])
     this.process.stdout.on("data", (data) => {
       this.buffer += data
     })
@@ -70,7 +77,6 @@ class Session {
     })
     this.process.on("error", (err) => {
       console.log(`Session ${this.id} error: ${err}`)
-
       this.running = false
     })
   }
