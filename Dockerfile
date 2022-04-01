@@ -1,6 +1,6 @@
 FROM alpine:3 as base
 
-RUN apk add --no-cache --virtual .build-deps gcc make musl-dev unzip curl
+RUN apk add --no-cache --virtual build-deps gcc make musl-dev unzip curl
 WORKDIR /build/
 
 RUN curl -L -q https://github.com/erkyrath/cheapglk/archive/master.zip >cheapglk.zip && \
