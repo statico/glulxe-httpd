@@ -15,7 +15,7 @@ If you haven't spent many laborous hours writing an interactive fiction game wit
 
 ### With Docker
 
-    $ docker run -p 8080:8080 -v mygame.ulx:/story.ulx statico/glulxe-httpd
+    $ docker run -p 8080:8080 -v mygame.ulx:/story.ulx ghcr.io/statico/glulxe-httpd
 
 ### With Node.js
 
