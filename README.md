@@ -1,7 +1,6 @@
 # glulxe-httpd
 
 [![license](https://img.shields.io/github/license/statico/glulxe-httpd.svg?style=flat-square)](https://github.com/statico/glulxe-httpd/blob/master/LICENSE)
-[![Docker](https://img.shields.io/docker/automated/statico/glulxe-httpd.svg?style=flat-square)](https://hub.docker.com/r/statico/glulxe-httpd/)
 
 ifhttp provides an HTTP REST interface for interacting with interactive fiction (IF) stories in the [Glulx (`.ulx`) format](http://ifwiki.org/index.php/Glulx) using [glulxe](https://github.com/erkyrath/glulxe). Clients (like [my website](https://github.com/statico/langterm)) can connect to the service to start a game and then send commands to it.
 
