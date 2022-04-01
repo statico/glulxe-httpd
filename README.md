@@ -1,9 +1,9 @@
 # glulxe-httpd
 
 [![license](https://img.shields.io/github/license/statico/glulxe-httpd.svg?style=flat-square)](https://github.com/statico/glulxe-httpd/blob/master/LICENSE)
-![status](https://img.shields.io/github/workflow/status/statico/glulxe-httpd/Create%20and%20publish%20a%20Docker%20image.svg?style=flat-square)
+[![build status](https://img.shields.io/github/workflow/status/statico/glulxe-httpd/Create%20and%20publish%20a%20Docker%20image.svg?style=flat-square)](https://ghcr.io/statico/glulxe-httpd)
 
-ifhttp provides an HTTP REST interface for interacting with interactive fiction (IF) stories in the [Glulx (`.ulx`) format](http://ifwiki.org/index.php/Glulx) using [glulxe](https://github.com/erkyrath/glulxe). Clients (like [my website](https://github.com/statico/langterm)) can connect to the service to start a game and then send commands to it.
+glulxe-httpd provides an HTTP REST interface for interacting with interactive fiction (IF) stories in the [Glulx (`.ulx`) format](http://ifwiki.org/index.php/Glulx) using [glulxe](https://github.com/erkyrath/glulxe). Clients (like [my website](https://github.com/statico/langterm)) can connect to the service to start a game and then send commands to it.
 
 Sessions are deleted after a while in a feeble attempt to save memory. This service is definitely DoS-able.
 
