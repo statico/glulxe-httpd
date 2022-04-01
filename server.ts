@@ -1,22 +1,22 @@
 import * as bodyParser from "body-parser"
 import { ChildProcess, spawn } from "child_process"
-import * as commander from "commander"
+import { program } from "commander"
 import * as cors from "cors"
+import { randomUUID } from "crypto"
 import * as express from "express"
 import * as fs from "fs"
 import { unparse } from "papaparse"
 import * as touch from "touch"
-import * as uuid from "uuid"
 
 require("console-stamp")(console)
 
 const sleep = (ms: number) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 
-commander
-  .usage("<story.ulx>")
+program
+  .argument("<story.ulx>", "glulxe story file")
   .option("-x, --exec <cmd>", "Path to glulxe", "glulxe")
   .option("-d, --debug", 'Always create/return the same session ID, "test"')
   .option(
@@ -26,12 +26,14 @@ commander
   )
   .option("-c, --csv <path>", "Log game sessions to a CSV file")
   .option("-p, --port <port>", "Port to bind to", "8080")
-  .parse(process.argv)
+  .parse()
 
-if (commander.args.length !== 1) {
-  commander.help()
+if (program.args.length !== 1) {
+  program.help()
 }
-const [story] = commander.args
+const [story] = program.args
+
+const options = program.opts()
 
 const stat = fs.statSync(story)
 if (!(stat && stat.isFile())) {
@@ -43,7 +45,7 @@ const sessions: { [key: string]: Session } = {}
 
 // Cleanup idle sessions.
 setInterval(function () {
-  const t = Date.now() - Number(commander.sessionTimeout) * 1000
+  const t = Date.now() - Number(options.sessionTimeout) * 1000
   for (const id in sessions) {
     const sess = sessions[id]
     if (sess.lastUpdate < t) {
@@ -62,12 +64,12 @@ class Session {
   private buffer: string
 
   constructor() {
-    this.id = commander.debug ? "test" : uuid.v4()
+    this.id = options.debug ? "test" : randomUUID()
     this.running = true
     this.lastUpdate = Date.now()
     this.buffer = ""
 
-    this.process = spawn(commander.exec, [story])
+    this.process = spawn(options.exec, [story])
     this.process.stdout.on("data", (data) => {
       this.buffer += data
     })
@@ -117,19 +119,19 @@ function logToCSV(
   message: string,
   reply: string
 ) {
-  if (!commander.csv) return
+  if (!options.csv) return
   const datetime = new Date().toISOString().slice(0, 19).replace("T", " ")
   const line = unparse([[datetime, sessionId, addr, message, reply]])
   try {
-    fs.appendFileSync(commander.csv, line + "\n", "utf8")
+    fs.appendFileSync(options.csv, line + "\n", "utf8")
   } catch (err) {
-    console.error(`Could not write to ${commander.csv}:`, err)
+    console.error(`Could not write to ${options.csv}:`, err)
   }
 }
 
-if (commander.csv) {
-  touch.sync(commander.csv)
-  console.log(`Logging sessions as CSV to ${commander.csv}`)
+if (options.csv) {
+  touch.sync(options.csv)
+  console.log(`Logging sessions as CSV to ${options.csv}`)
 }
 
 const app = express()
@@ -142,7 +144,7 @@ app.get("/", function (req, res) {
 })
 
 app.post("/new", async function (req, res) {
-  const remoteAddr = req.get("x-forwarded-for") || req.connection.remoteAddress
+  const remoteAddr = req.get("x-forwarded-for") || req.socket.remoteAddress
   const sess = new Session()
   sessions[sess.id] = sess
   console.log(sess.id, remoteAddr, "(new session)")
@@ -154,7 +156,7 @@ app.post("/new", async function (req, res) {
 })
 
 app.post("/send", async function (req, res) {
-  const remoteAddr = req.get("x-forwarded-for") || req.connection.remoteAddress
+  const remoteAddr = req.get("x-forwarded-for") || req.socket.remoteAddress
 
   // Simple input sanitization.
   const message = req.body.message?.substr(0, 255).replace(/[^\w ]+/g, "")
@@ -186,11 +188,11 @@ app.post("/send", async function (req, res) {
   }
 })
 
-if (commander.debug) {
+if (options.debug) {
   // Skip an extra request when debugging.
   sessions["test"] = new Session()
 }
 
-const listener = app.listen(Number(commander.port), () => {
-  console.log(`ifhttp listening at http://localhost:${commander.port}`)
+const listener = app.listen(Number(options.port), () => {
+  console.log(`ifhttp listening at http://localhost:${options.port}`)
 })
