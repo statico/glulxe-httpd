@@ -17,7 +17,7 @@ RUN curl -L -q https://github.com/erkyrath/glulxe/archive/master.zip >glulxe.zip
   make -j8 && \
   cd /build
 
-FROM node:12-alpine
+FROM node:16-alpine
 
 COPY --from=base /build/glulxe/glulxe /usr/local/bin/glulxe
 
