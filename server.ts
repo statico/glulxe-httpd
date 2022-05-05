@@ -173,6 +173,12 @@ app.post("/send", async function (req, res) {
     return
   }
 
+  // Save and restore is not supported.
+  if (/^\s*(save|restore)\b/i.test(message)) {
+    res.json({ output: "Save and restore is not currently supported.\n\n>" })
+    return
+  }
+
   try {
     console.log(sess.id, remoteAddr, JSON.stringify(message))
     const output = await sess.send(message)
