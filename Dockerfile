@@ -24,6 +24,6 @@ COPY --from=base /build/glulxe/glulxe /usr/local/bin/glulxe
 WORKDIR /app/
 
 COPY package.json yarn.lock server.ts ./
-RUN yarn
+RUN yarn install --pure-lockfile
 EXPOSE 8080
 CMD yarn start -x /usr/local/bin/glulxe -c /out.csv -p 8080 /story.ulx

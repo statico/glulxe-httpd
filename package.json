@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "HTTP+JSON .ulx interactive fiction server with session support",
   "scripts": {
-    "start": "ts-node-dev server.ts",
+    "start": "node server.js",
     "prepare": "husky install"
   },
   "repository": "git@github.com:statico/glulxe-httpd.git",
@@ -11,27 +11,17 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "body-parser": "1.19.2",
-    "commander": "9.1.0",
-    "console-stamp": "3.0.4",
+    "body-parser": "1.20.0",
+    "commander": "9.3.0",
     "cors": "2.8.5",
-    "express": "4.17.3",
+    "express": "4.18.1",
     "papaparse": "5.3.2",
     "touch": "3.1.0"
   },
   "devDependencies": {
-    "@types/body-parser": "1.19.2",
-    "@types/console-stamp": "0.2.33",
-    "@types/cors": "2.8.12",
-    "@types/express": "4.17.13",
-    "@types/node": "17",
-    "@types/papaparse": "5.3.2",
-    "@types/touch": "3.1.2",
-    "husky": "^7.0.4",
-    "lint-staged": "^12.3.7",
-    "prettier": "2.6.1",
-    "ts-node-dev": "1.1.8",
-    "typescript": "4.6.3"
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "2.7.1"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

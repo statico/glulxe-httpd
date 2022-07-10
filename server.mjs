@@ -1,16 +1,14 @@
-import * as bodyParser from "body-parser"
-import { ChildProcess, spawn } from "child_process"
+import bodyParser from "body-parser"
+import { spawn } from "child_process"
 import { program } from "commander"
-import * as cors from "cors"
+import cors from "cors"
 import { randomUUID } from "crypto"
-import * as express from "express"
-import * as fs from "fs"
-import { unparse } from "papaparse"
-import * as touch from "touch"
+import express from "express"
+import fs from "fs"
+import papaparse from "papaparse"
+import touch from "touch"
 
-require("console-stamp")(console)
-
-const sleep = (ms: number) =>
+const sleep = (ms) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
@@ -41,7 +39,7 @@ if (!(stat && stat.isFile())) {
   process.exit(1)
 }
 
-const sessions: { [key: string]: Session } = {}
+const sessions = {}
 
 // Cleanup idle sessions.
 setInterval(function () {
@@ -57,12 +55,6 @@ setInterval(function () {
 }, 60 * 1000)
 
 class Session {
-  public id: string
-  public running: boolean
-  public lastUpdate: number
-  private process: ChildProcess
-  private buffer: string
-
   constructor() {
     this.id = options.debug ? "test" : randomUUID()
     this.running = true
@@ -88,7 +80,7 @@ class Session {
     this.running = false
   }
 
-  async getBuffer(): Promise<string> {
+  async getBuffer() {
     // Wait up to 2 seconds for the buffer to end with the '>' prompt.
     let count = 0
     while (true) {
@@ -103,7 +95,7 @@ class Session {
     return output
   }
 
-  async send(input: string): Promise<string> {
+  async send(input) {
     if (!this.running) {
       throw new Error("Interpreter not running")
     }
@@ -113,15 +105,10 @@ class Session {
   }
 }
 
-function logToCSV(
-  addr: string,
-  sessionId: string,
-  message: string,
-  reply: string
-) {
+function logToCSV(addr, sessionId, message, reply) {
   if (!options.csv) return
   const datetime = new Date().toISOString().slice(0, 19).replace("T", " ")
-  const line = unparse([[datetime, sessionId, addr, message, reply]])
+  const line = papaparse.unparse([[datetime, sessionId, addr, message, reply]])
   try {
     fs.appendFileSync(options.csv, line + "\n", "utf8")
   } catch (err) {
