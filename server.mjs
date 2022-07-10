@@ -123,7 +123,12 @@ if (options.csv) {
 
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || undefined,
+  })
+)
 
 app.get("/", function (req, res) {
   res.set("Content-Type", "text/plain")
