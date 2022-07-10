@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "HTTP+JSON .ulx interactive fiction server with session support",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server.mjs",
     "prepare": "husky install"
   },
   "repository": "git@github.com:statico/glulxe-httpd.git",
