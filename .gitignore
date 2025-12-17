@@ -105,3 +105,8 @@ dist
 
 # Production files
 fly.toml
+
+# Test artifacts
+test/story.ulx
+test/*.ulx
+gameinfo.dbg
