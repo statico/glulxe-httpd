@@ -23,7 +23,7 @@ COPY --from=base /build/glulxe/glulxe /usr/local/bin/glulxe
 
 WORKDIR /app/
 
-COPY package.json yarn.lock server.mjs ./
-RUN yarn install --pure-lockfile
+COPY package.json pnpm-lock.yaml server.mjs ./
+RUN pnpm install --frozen-lockfile
 EXPOSE 8080
-CMD yarn start -x /usr/local/bin/glulxe -c /out.csv -p 8080 /story.ulx
+CMD pnpm start -x /usr/local/bin/glulxe -c /out.csv -p 8080 /story.ulx

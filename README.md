@@ -20,9 +20,9 @@ If you haven't spent many laborous hours writing an interactive fiction game wit
 ### With Node.js
 
 1. Get Node.js v12 or so
-1. Install Yarn
-1. `yarn install`
-1. `yarn start mygame.ulx`
+1. Install pnpm
+1. `pnpm install`
+1. `pnpm start mygame.ulx`
 
 ## Sending Commands
 
