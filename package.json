@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "HTTP+JSON .ulx interactive fiction server with session support",
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "prepare": "husky"
   },
   "repository": "git@github.com:statico/glulxe-httpd.git",
   "author": "Ian Langworth <ian@langworth.com>",
@@ -16,5 +17,14 @@
     "express": "5.2.1",
     "papaparse": "5.5.3",
     "touch": "3.1.1"
-  }
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "3.8.1"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "packageManager": "pnpm@10.33.0"
 }
