@@ -1,6 +1,6 @@
 # glulxe-httpd
 
-[![license](https://img.shields.io/github/license/statico/glulxe-httpd.svg?style=flat-square)](https://github.com/statico/glulxe-httpd/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/statico/glulxe-httpd.svg?style=flat-square)](https://github.com/statico/glulxe-httpd/blob/main/LICENSE)
 [![build status](https://img.shields.io/github/actions/workflow/status/statico/glulxe-httpd/build.yml?branch=main&style=flat-square)](https://ghcr.io/statico/glulxe-httpd)
 
 glulxe-httpd provides an HTTP REST interface for interacting with interactive fiction (IF) stories in the [Glulx (`.ulx`) format](http://ifwiki.org/index.php/Glulx) using [glulxe](https://github.com/erkyrath/glulxe). Clients (like [my website](https://github.com/statico/langterm)) can connect to the service to start a game and then send commands to it.
@@ -19,8 +19,8 @@ If you haven't spent many laborous hours writing an interactive fiction game wit
 
 ### With Node.js
 
-1. Get Node.js v12 or so
-1. Install pnpm
+1. Get Node.js v22 or later
+1. `corepack enable pnpm`
 1. `pnpm install`
 1. `pnpm start mygame.ulx`
 

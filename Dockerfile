@@ -21,7 +21,7 @@ RUN curl -L -q https://github.com/erkyrath/glulxe/archive/master.zip >glulxe.zip
 
 FROM node:24-alpine
 
-RUN npm install -g pnpm
+RUN corepack enable pnpm
 
 COPY --from=base /build/glulxe/glulxe /usr/local/bin/glulxe
 
