@@ -1,37 +1,60 @@
-import bodyParser from "body-parser";
 import { spawn } from "child_process";
-import { program } from "commander";
-import cors from "cors";
 import { randomUUID } from "crypto";
-import express from "express";
 import fs from "fs";
+import { parseArgs } from "node:util";
+
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { serve } from "@hono/node-server";
 import papaparse from "papaparse";
-import touch from "touch";
 
 const sleep = (ms) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 
-program
-  .argument("<story.ulx>", "glulxe story file")
-  .option("-x, --exec <cmd>", "Path to glulxe", "glulxe")
-  .option("-d, --debug", 'Always create/return the same session ID, "test"')
-  .option(
-    "-t, --session-timeout <timeout>",
-    "Session timeout (in seconds)",
-    "900"
-  )
-  .option("-c, --csv <path>", "Log game sessions to a CSV file")
-  .option("-p, --port <port>", "Port to bind to", "8080")
-  .parse();
+const { values: opts, positionals } = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    exec: { type: "string", short: "x", default: "glulxe" },
+    debug: { type: "boolean", short: "d", default: false },
+    "session-timeout": { type: "string", short: "t", default: "900" },
+    csv: { type: "string", short: "c" },
+    port: { type: "string", short: "p", default: "8080" },
+  },
+  allowPositionals: true,
+});
 
-if (program.args.length !== 1) {
-  program.help();
+if (positionals.length !== 1) {
+  console.error("Usage: node server.mjs [options] <story.ulx>");
+  console.error("");
+  console.error("Options:");
+  console.error(
+    '  -x, --exec <cmd>              Path to glulxe (default: "glulxe")'
+  );
+  console.error(
+    '  -d, --debug                   Always create/return the same session ID, "test"'
+  );
+  console.error(
+    "  -t, --session-timeout <secs>  Session timeout in seconds (default: 900)"
+  );
+  console.error(
+    "  -c, --csv <path>              Log game sessions to a CSV file"
+  );
+  console.error(
+    '  -p, --port <port>             Port to bind to (default: "8080")'
+  );
+  process.exit(1);
 }
-const [story] = program.args;
 
-const options = program.opts();
+const [story] = positionals;
+const options = {
+  exec: opts.exec,
+  debug: opts.debug,
+  sessionTimeout: opts["session-timeout"],
+  csv: opts.csv,
+  port: opts.port,
+};
 
 const stat = fs.statSync(story);
 if (!(stat && stat.isFile())) {
@@ -117,26 +140,26 @@ function logToCSV(addr, sessionId, message, reply) {
 }
 
 if (options.csv) {
-  touch.sync(options.csv);
+  fs.closeSync(fs.openSync(options.csv, "a"));
   console.log(`Logging sessions as CSV to ${options.csv}`);
 }
 
-const app = express();
-app.use(bodyParser.json());
+const app = new Hono();
 
 app.use(
+  "*",
   cors({
-    origin: process.env.CORS_ORIGIN || undefined,
+    origin: process.env.CORS_ORIGIN || "*",
   })
 );
 
-app.get("/", function (req, res) {
-  res.set("Content-Type", "text/plain");
-  res.send("ok\n");
+app.get("/", (c) => {
+  return c.text("ok\n");
 });
 
-app.post("/new", async function (req, res) {
-  const remoteAddr = req.get("x-forwarded-for") || req.socket.remoteAddress;
+app.post("/new", async (c) => {
+  const remoteAddr =
+    c.req.header("x-forwarded-for") || c.env.incoming?.socket?.remoteAddress;
   const sess = new Session();
   sessions[sess.id] = sess;
   console.log(sess.id, remoteAddr, "(new session)");
@@ -144,45 +167,47 @@ app.post("/new", async function (req, res) {
     /^Welcome to the Cheap Glk[^\n]+\n+/m,
     ""
   );
-  res.json({ session: sess.id, output });
+  return c.json({ session: sess.id, output });
 });
 
-app.post("/send", async function (req, res) {
-  const remoteAddr = req.get("x-forwarded-for") || req.socket.remoteAddress;
+app.post("/send", async (c) => {
+  const remoteAddr =
+    c.req.header("x-forwarded-for") || c.env.incoming?.socket?.remoteAddress;
+
+  const body = await c.req.json();
 
   // Simple input sanitization.
-  const message = req.body.message?.substr(0, 255).replace(/[^\w ]+/g, "");
+  const message = body.message?.substr(0, 255).replace(/[^\w ]+/g, "");
 
-  const { session } = req.body;
+  const { session } = body;
   if (session == null || message == null) {
-    res.status(400).json({ error: "Missing session or message" });
-    return;
+    return c.json({ error: "Missing session or message" }, 400);
   }
 
   const sess = sessions[session];
   if (sess == null) {
-    res.status(400).json({ error: "No such session" });
-    return;
+    return c.json({ error: "No such session" }, 400);
   }
 
   // Save and restore is not supported.
   if (/^\s*(save|restore)\b/i.test(message)) {
-    res.json({ output: "Save and restore is not currently supported.\n\n>" });
-    return;
+    return c.json({
+      output: "Save and restore is not currently supported.\n\n>",
+    });
   }
 
   try {
     console.log(sess.id, remoteAddr, JSON.stringify(message));
     const output = await sess.send(message);
     logToCSV(remoteAddr, sess.id, message, output);
-    res.json({ output });
+    const response = c.json({ output });
     if (!sess.running) {
       delete sessions[session];
     }
+    return response;
   } catch (err) {
     console.error(sess.id, remoteAddr, `Error: ${err}`);
-    res.status(500).json({ error: String(err) });
-    return;
+    return c.json({ error: String(err) }, 500);
   }
 });
 
@@ -191,6 +216,6 @@ if (options.debug) {
   sessions["test"] = new Session();
 }
 
-app.listen(Number(options.port), () => {
+serve({ fetch: app.fetch, port: Number(options.port) }, () => {
   console.log(`glulxe listening at http://localhost:${options.port}`);
 });
