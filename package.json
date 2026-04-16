@@ -10,8 +10,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@hono/node-server": "^1.19.14",
-    "hono": "^4.12.14",
+    "@statico/zerodep-node-http-server": "^0.1.0",
     "papaparse": "5.5.3"
   },
   "packageManager": "pnpm@10.33.0"

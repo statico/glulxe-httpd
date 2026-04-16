@@ -3,9 +3,9 @@ import { randomUUID } from "crypto";
 import fs from "fs";
 import { parseArgs } from "node:util";
 
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { serve } from "@hono/node-server";
+import { App } from "@statico/zerodep-node-http-server";
+import { cors } from "@statico/zerodep-node-http-server";
+import { serve } from "@statico/zerodep-node-http-server";
 import papaparse from "papaparse";
 
 const sleep = (ms) =>
@@ -144,7 +144,7 @@ if (options.csv) {
   console.log(`Logging sessions as CSV to ${options.csv}`);
 }
 
-const app = new Hono();
+const app = new App();
 
 app.use(
   "*",
