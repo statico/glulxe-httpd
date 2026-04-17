@@ -9,16 +9,16 @@ importers:
   .:
     dependencies:
       '@statico/zerodep-node-http-server':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.3
+        version: 0.1.3
       papaparse:
         specifier: 5.5.3
         version: 5.5.3
 
 packages:
 
-  '@statico/zerodep-node-http-server@0.1.0':
-    resolution: {integrity: sha512-f56h2cZtiqjEi5OkZ4KEJ/9nPnSB5of2EBHD20ywD10SXQoSkG7Bbs66M2ZuWplzcxDvJ6G2hM79SaYswKSYGw==}
+  '@statico/zerodep-node-http-server@0.1.3':
+    resolution: {integrity: sha512-4UXdavdY88AamhVNUyKR5/5/TQ21WrGbKIiUOSpz+bcpkMh18p/SbGcKO1Iw9yQJjWx4j18hiH+5Caml6xZtRQ==}
     engines: {node: '>=22'}
 
   papaparse@5.5.3:
@@ -26,6 +26,6 @@ packages:
 
 snapshots:
 
-  '@statico/zerodep-node-http-server@0.1.0': {}
+  '@statico/zerodep-node-http-server@0.1.3': {}
 
   papaparse@5.5.3: {}
